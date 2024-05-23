@@ -1,0 +1,331 @@
+{
+    "swagger": "2.0",
+    "info": {
+      "description": "This is the API documentation for the Recipe API",
+      "version": "1.0.0",
+      "title": "Recipe API"
+    },
+    "host": "localhost:6060",
+    "basePath": "/",
+    "tags": [
+      {
+        "name": "Authentication",
+        "description": "JWT Token creation"
+      },
+      {
+        "name": "Recipes",
+        "description": "Recipe CRUD operations"
+      }
+    ],
+    "schemes": ["http"],
+    "securityDefinitions": {
+      "Bearer": {
+        "type": "apiKey",
+        "name": "Authorization",
+        "in": "header",
+        "description": "JWT token to authorize requests"
+      }
+    },
+    "paths": {
+      "/api/token": {
+        "post": {
+          "tags": ["Authentication"],
+          "summary": "Create a new JWT token",
+          "description": "Create a new JWT token by providing username and password",
+          "parameters": [
+            {
+              "in": "body",
+              "name": "body",
+              "schema": {
+                "type": "object",
+                "required": ["username", "password"],
+                "properties": {
+                  "username": {
+                    "type": "string"
+                  },
+                  "password": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+            
+          ],
+          "responses": {
+            "200": {
+              "description": "Token created",
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "Bearer": {
+                    "type": "string"
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "Invalid username or password"
+            }
+          }
+        }
+      },
+      "/api/recipes": {
+        "post": {
+          "tags": ["Recipes"],
+          "summary": "Create a new recipe",
+          "description": "Create a new recipe by providing title, servings, ingredients, and instructions",
+          "parameters": [
+            {
+              "in": "body",
+              "name": "body",
+              "schema": {
+                "type": "object",
+                "required": ["title", "servings", "ingredients", "instructions"],
+                "properties": {
+                  "title": {
+                    "type": "string"
+                  },
+                  "servings": {
+                    "type": "string"
+                  },
+                  "ingredients": {
+                      "type": "string"
+                  },
+                  "instructions": {
+                    "type": "string"
+                  }
+                }
+              }
+            },
+            {
+                "name": "Authorization",
+                  "in": "header",
+                  "required": true,
+                  "type": "string",
+                  "description": "Bearer token"
+            }
+          ],
+          "responses": {
+            "201": {
+              "description": "Recipe created",
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Invalid request data"
+            }
+          }
+        },
+        "get": {
+          "tags": ["Recipes"],
+          "summary": "Get all recipes",
+          "description": "Get all recipes with an optional search query",
+          "parameters": [
+            {
+              "name": "q",
+              "in": "query",
+              "type": "string",
+              "description": "Search term for recipes"
+            },
+            {
+            "name": "Authorization",
+              "in": "header",
+              "required": true,
+              "type": "string",
+              "description": "Bearer token"
+            }
+          ],
+          
+          "responses": {
+            "200": {
+              "description": "List of recipes",
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "integer"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "description": {
+                      "type": "string"
+                    },
+                    "ingredients": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "instructions": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/api/recipes/{id}": {
+        "get": {
+          "tags": ["Recipes"],
+          "summary": "Get a recipe by ID",
+          "description": "Get a recipe by ID",
+          "parameters": [
+            {
+              "name": "id",
+              "in": "path",
+              "type": "integer",
+              "required": true,
+              "description": "The recipe ID"
+            },
+            {
+                "name": "Authorization",
+                  "in": "header",
+                  "required": true,
+                  "type": "string",
+                  "description": "Bearer token"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Recipe details",
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "integer"
+                  },
+                  "title": {
+                    "type": "string"
+                  },
+                  "description": {
+                    "type": "string"
+                  },
+                  "ingredients": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "instructions": {
+                    "type": "string"
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": "Recipe not found"
+            }
+          }
+        },
+        "put": {
+          "tags": ["Recipes"],
+          "summary": "Update a recipe",
+          "description": "Update a recipe by ID",
+          "parameters": [
+            {
+              "name": "id",
+              "in": "path",
+              "type": "integer",
+              "required": true,
+              "description": "The recipe ID"
+            },
+            {
+                "name": "Authorization",
+                  "in": "header",
+                  "required": true,
+                  "type": "string",
+                  "description": "Bearer token"
+            },
+            {
+              "in": "body",
+              "name": "body",
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string"
+                  },
+                  "servings": {
+                    "type": "string"
+                  },
+                  "ingredients": {
+                      "type": "string"
+                  },
+                  "instructions": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          ],
+          
+          "responses": {
+            "200": {
+              "description": "Recipe updated",
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string"
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": "Recipe not found"
+            }
+          }
+        },
+        "delete": {
+          "tags": ["Recipes"],
+          "summary": "Delete a recipe",
+          "description": "Delete a recipe by ID",
+          "parameters": [
+            {
+              "name": "id",
+              "in": "path",
+              "type": "integer",
+              "required": true,
+              "description": "The recipe ID"
+            },
+            {
+                "name": "Authorization",
+                  "in": "header",
+                  "required": true,
+                  "type": "string",
+                  "description": "Bearer token"
+            }
+          ],
+          
+          "responses": {
+            "200": {
+              "description": "Recipe deleted",
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string"
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": "Recipe not found"
+            }
+          }
+        }
+      }
+    }
+  }
+  
