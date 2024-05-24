@@ -33,13 +33,6 @@ def get_token():
 @jwt_required()
 def get_recipes():
     try:
-        current_user = get_jwt_identity()
-
-        role = 'WRITER' if current_user == 'writer' else 'ADMIN'
-
-        if role not in ['ADMIN', 'WRITER']:
-            return jsonify({"msg": "Not allowed"}), 403
-        
         page = request.args.get('page', default=1, type=int)
         limit = request.args.get('limit', default=3, type=int)  
 
@@ -61,6 +54,7 @@ def get_recipes():
         return jsonify({"error": str(e)}), 500
    
 @app.route('/api/recipes/<int:recipe_id>', methods=['GET'])
+@jwt_required()
 def get_recipe_by_id(recipe_id):
     recipe = Recipe.query.get(recipe_id)
     if recipe is not None:
@@ -78,13 +72,6 @@ def get_recipe_by_id(recipe_id):
 @jwt_required()
 def create_recipe():
     try:
-        current_user = get_jwt_identity()
-
-        role = 'WRITER' if current_user == 'writer' else 'ADMIN'
-
-        if role not in ['ADMIN', 'WRITER']:
-            return jsonify({"msg": "Not allowed"}), 403
-        
         data = request.get_json()
         new_recipe = Recipe(**data)
         db.session.add(new_recipe)
@@ -98,13 +85,6 @@ def create_recipe():
 @jwt_required()
 def update_recipe(recipe_id):
     try:
-        current_user = get_jwt_identity()
-
-        role = 'WRITER' if current_user == 'writer' else 'ADMIN'
-
-        if role not in ['ADMIN', 'WRITER']:
-            return jsonify({"msg": "Not allowed"}), 403
-        
         data = request.get_json()
         recipe = Recipe.query.get(recipe_id)
             
