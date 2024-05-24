@@ -40,23 +40,22 @@ def get_recipes():
         if role not in ['ADMIN', 'WRITER']:
             return jsonify({"msg": "Not allowed"}), 403
         
-        # Retrieve query parameters for pagination
-        page = int(request.args.get('page', 1))
-        limit = int(request.args.get('limit', 10))  # Default limit to 10 if not provided
-
-        # Calculate the offset based on the page and limit
-        offset = (page - 1) * limit
-
-        # Query recipes with pagination
-        recipes = Recipe.query.offset(offset).limit(limit).all()
-        total_recipes = Recipe.query.count()
-        total_pages = (total_recipes + limit - 1) // limit
+        page = request.args.get('page', default=1, type=int)
+        limit = request.args.get('limit', default=3, type=int)  
 
         search_query = request.args.get('q', '')
-        recipes = Recipe.query.filter(Recipe.title.ilike(f'%{search_query}%')).all()
+        recipes = Recipe.query.filter(Recipe.title.ilike(f'%{search_query}%')).paginate(page=page, per_page=limit, error_out=False)
         data = [recipe.to_dict() for recipe in recipes]
-
-        return jsonify(data), 200
+        pagination_data = {
+        'total_pages': recipes.pages,
+        'total_items': recipes.total,
+        'current_page': recipes.page,
+        'per_page': recipes.per_page,
+        'next_page': recipes.next_num,
+        'prev_page': recipes.prev_num,
+        'recipes': data
+    }
+        return jsonify(pagination_data), 200
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
